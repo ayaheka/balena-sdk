@@ -1,4 +1,16 @@
 - commits:
+    - subject: Move to balena-lint v5
+      hash: 06688c1559ceda9c7ce280401ae1ba3f0d12e5af
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Thodoris Greasidis <thodoris@balena.io>
+        signed-off-by: Thodoris Greasidis <thodoris@balena.io>
+      author: Thodoris Greasidis
+  version: 12.30.5
+  date: 2020-03-26T13:16:23.750Z
+- commits:
     - subject: Convert the Release model to TypeScript
       hash: 2542bb8a5be40303bc28ebb6b1cf8de5e7f37b2e
       body: ''
