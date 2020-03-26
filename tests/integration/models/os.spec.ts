@@ -18,13 +18,13 @@ const eventuallyExpectProperty = <T>(promise: Promise<T>, prop: string) =>
 
 // tslint:disable-next-line:variable-name
 const itShouldClear_getDeviceTypesCache = (stepFn: () => void) =>
-	it('should clear the result cache of balena.models.os._getDeviceTypes()', function() {
+	it('should clear the result cache of balena.models.os._getDeviceTypes()', function () {
 		const p1 = balena.models.os._getDeviceTypes();
-		return p1.tap(stepFn).then(function(result1) {
+		return p1.tap(stepFn).then(function (result1) {
 			const p2 = balena.models.os._getDeviceTypes();
-			return p2.then(function(result2) {
+			return p2.then(function (result2) {
 				// the endpoint doesn't sort the device types atm
-				[result1, result2].forEach(dtArray =>
+				[result1, result2].forEach((dtArray) =>
 					dtArray.sort((a, b) => a.slug.localeCompare(b.slug)),
 				);
 
@@ -36,11 +36,11 @@ const itShouldClear_getDeviceTypesCache = (stepFn: () => void) =>
 
 // tslint:disable-next-line:variable-name
 const itShouldClear_getOsVersionsCache = (stepFn: () => void) =>
-	it('should clear the result cache of balena.models.os._getOsVersions()', function() {
+	it('should clear the result cache of balena.models.os._getOsVersions()', function () {
 		const p1 = balena.models.os._getOsVersions('raspberry-pi');
-		return p1.tap(stepFn).then(function(result1) {
+		return p1.tap(stepFn).then(function (result1) {
 			const p2 = balena.models.os._getOsVersions('raspberry-pi');
-			return p2.then(function(result2) {
+			return p2.then(function (result2) {
 				expect(result1).to.deep.equal(result2);
 				expect(p1).to.not.equal(p2);
 			});
@@ -49,21 +49,21 @@ const itShouldClear_getOsVersionsCache = (stepFn: () => void) =>
 
 // tslint:disable-next-line:variable-name
 const itShouldClear_getDownloadSizeCache = (stepFn: () => void) =>
-	it('should clear the result cache of balena.models.os._getDownloadSize()', function() {
+	it('should clear the result cache of balena.models.os._getDownloadSize()', function () {
 		const p1 = balena.models.os._getDownloadSize('raspberry-pi', '1.26.1');
-		return p1.tap(stepFn).then(function(result1) {
+		return p1.tap(stepFn).then(function (result1) {
 			const p2 = balena.models.os._getDownloadSize('raspberry-pi', '1.26.1');
-			return p2.then(function(result2) {
+			return p2.then(function (result2) {
 				expect(result1).to.deep.equal(result2);
 				expect(p1).to.not.equal(p2);
 			});
 		});
 	});
 
-const describeAllAuthUserChanges = function(
+const describeAllAuthUserChanges = function (
 	itFnWithStep: (fn: () => void) => Mocha.Test,
 ) {
-	describe('when not logged in', function() {
+	describe('when not logged in', function () {
 		beforeEach(() => balena.auth.logout());
 
 		describe('balena.auth.logout()', () =>
@@ -83,7 +83,7 @@ const describeAllAuthUserChanges = function(
 			));
 	});
 
-	describe('when logged in with credentials', function() {
+	describe('when logged in with credentials', function () {
 		givenLoggedInUser(beforeEach);
 
 		afterEach(() => balena.auth.logout());
@@ -106,8 +106,8 @@ const describeAllAuthUserChanges = function(
 	});
 };
 
-describe('OS model', function() {
-	describe('balena.models.os._getMaxSatisfyingVersion()', function() {
+describe('OS model', function () {
+	describe('balena.models.os._getMaxSatisfyingVersion()', function () {
 		const osVersions = {
 			versions: [
 				'2.0.1+rev2.prod',
@@ -182,15 +182,15 @@ describe('OS model', function() {
 			).to.equal(null));
 	});
 
-	describe('balena.models.os.getSupportedVersions()', function() {
-		describe('given a valid device slug', function() {
+	describe('balena.models.os.getSupportedVersions()', function () {
+		describe('given a valid device slug', function () {
 			const expectSorted = (
 				array: string[],
 				comparator: <T extends string | null | undefined>(a: T, b: T) => number, // re-sorting could fail when the system is not using a stable
 			) =>
 				// sorting algorithm, in which case items of the same value
 				// might swap positions in the array
-				array.forEach(function(item, i) {
+				array.forEach(function (item, i) {
 					if (i === 0) {
 						return;
 					}
@@ -199,35 +199,27 @@ describe('OS model', function() {
 					expect(comparator(previousItem, item)).to.be.lte(0);
 				});
 
-			const areValidVersions = function(osVersions: BalenaSdk.OsVersions) {
+			const areValidVersions = function (osVersions: BalenaSdk.OsVersions) {
 				expect(osVersions).to.be.an('object');
-				expect(osVersions)
-					.to.have.property('versions')
-					.that.is.an('array');
+				expect(osVersions).to.have.property('versions').that.is.an('array');
 				expect(osVersions.versions).to.not.have.lengthOf(0);
 
 				expectSorted(osVersions.versions, bSemver.rcompare);
 
-				expect(osVersions)
-					.to.have.property('latest')
-					.that.is.a('string');
-				expect(osVersions)
-					.to.have.property('recommended')
-					.that.is.a('string');
-				expect(osVersions)
-					.to.have.property('default')
-					.that.is.a('string');
+				expect(osVersions).to.have.property('latest').that.is.a('string');
+				expect(osVersions).to.have.property('recommended').that.is.a('string');
+				expect(osVersions).to.have.property('default').that.is.a('string');
 				expect(osVersions.default).to.equal(osVersions.recommended);
 
 				return true;
 			};
 
-			it('should eventually return the valid versions object', function() {
+			it('should eventually return the valid versions object', function () {
 				const promise = balena.models.os.getSupportedVersions('raspberry-pi');
 				return expect(promise).to.eventually.satisfy(areValidVersions);
 			});
 
-			it('should eventually return the valid versions object if passing a device type alias', function() {
+			it('should eventually return the valid versions object if passing a device type alias', function () {
 				const promise = balena.models.os.getSupportedVersions('raspberrypi');
 				return expect(promise).to.eventually.satisfy(areValidVersions);
 			});
@@ -235,17 +227,17 @@ describe('OS model', function() {
 			it('should cache the results', () =>
 				balena.models.os
 					.getSupportedVersions('raspberry-pi')
-					.then(result1 =>
+					.then((result1) =>
 						balena.models.os
 							.getSupportedVersions('raspberry-pi')
-							.then(result2 => expect(result1).to.equal(result2)),
+							.then((result2) => expect(result1).to.equal(result2)),
 					));
 
 			it('should cache the supported versions independently for each device type', () =>
 				Bluebird.all([
 					balena.models.os.getSupportedVersions('raspberry-pi'),
 					balena.models.os.getSupportedVersions('raspberrypi3'),
-				]).then(function(...args) {
+				]).then(function (...args) {
 					const [deviceType1Versions, deviceType2Versions] = Array.from(
 						args[0],
 					);
@@ -254,18 +246,18 @@ describe('OS model', function() {
 		});
 
 		describe('given an invalid device slug', () =>
-			it('should be rejected with an error message', function() {
+			it('should be rejected with an error message', function () {
 				const promise = balena.models.os.getSupportedVersions('foo-bar-baz');
 				return expect(promise).to.be.rejectedWith('No such device type');
 			}));
 	});
 
-	describe('balena.models.os._getDeviceTypes()', function() {
-		it('should cache the results', function() {
+	describe('balena.models.os._getDeviceTypes()', function () {
+		it('should cache the results', function () {
 			const p1 = balena.models.os._getDeviceTypes();
-			return p1.then(function(result1) {
+			return p1.then(function (result1) {
 				const p2 = balena.models.os._getDeviceTypes();
-				return p2.then(function(result2) {
+				return p2.then(function (result2) {
 					expect(result1).to.equal(result2);
 					expect(p1).to.equal(p2);
 				});
@@ -275,12 +267,12 @@ describe('OS model', function() {
 		describeAllAuthUserChanges(itShouldClear_getDeviceTypesCache);
 	});
 
-	describe('balena.models.os._getOsVersions()', function() {
-		it('should cache the results', function() {
+	describe('balena.models.os._getOsVersions()', function () {
+		it('should cache the results', function () {
 			const p1 = balena.models.os._getOsVersions('raspberry-pi');
-			return p1.then(function(result1) {
+			return p1.then(function (result1) {
 				const p2 = balena.models.os._getOsVersions('raspberry-pi');
-				return p2.then(function(result2) {
+				return p2.then(function (result2) {
 					expect(result1).to.equal(result2);
 					expect(p1).to.equal(p2);
 				});
@@ -290,21 +282,21 @@ describe('OS model', function() {
 		describeAllAuthUserChanges(itShouldClear_getOsVersionsCache);
 	});
 
-	describe('balena.models.os.getDownloadSize()', function() {
-		describe('given a valid device slug', function() {
-			it('should eventually be a valid number', function() {
+	describe('balena.models.os.getDownloadSize()', function () {
+		describe('given a valid device slug', function () {
+			it('should eventually be a valid number', function () {
 				const promise = balena.models.os.getDownloadSize('raspberry-pi');
 				return expect(promise).to.eventually.be.a('number');
 			});
 
-			it('should eventually be a valid number if passing a device type alias', function() {
+			it('should eventually be a valid number if passing a device type alias', function () {
 				const promise = balena.models.os.getDownloadSize('raspberrypi');
 				return expect(promise).to.eventually.be.a('number');
 			});
 		});
 
-		describe('given a specific OS version', function() {
-			it('should get a result for ResinOS v1', function() {
+		describe('given a specific OS version', function () {
+			it('should get a result for ResinOS v1', function () {
 				const promise = balena.models.os.getDownloadSize(
 					'raspberry-pi',
 					'1.26.1',
@@ -312,7 +304,7 @@ describe('OS model', function() {
 				return expect(promise).to.eventually.be.a('number');
 			});
 
-			it('should get a result for ResinOS v2', function() {
+			it('should get a result for ResinOS v2', function () {
 				const promise = balena.models.os.getDownloadSize(
 					'raspberry-pi',
 					'2.0.6+rev3.prod',
@@ -323,35 +315,35 @@ describe('OS model', function() {
 			it('should cache the results', () =>
 				balena.models.os
 					.getDownloadSize('raspberry-pi', '1.26.1')
-					.then(result1 =>
+					.then((result1) =>
 						balena.models.os
 							.getDownloadSize('raspberry-pi', '1.26.1')
-							.then(result2 => expect(result1).to.equal(result2)),
+							.then((result2) => expect(result1).to.equal(result2)),
 					));
 
 			it('should cache download sizes independently for each version', () =>
 				Bluebird.all([
 					balena.models.os.getDownloadSize('raspberry-pi', '1.26.1'),
 					balena.models.os.getDownloadSize('raspberry-pi', '2.0.6+rev3.prod'),
-				]).then(function(...args) {
+				]).then(function (...args) {
 					const [os1Size, os2Size] = Array.from(args[0]);
 					expect(os1Size).not.to.equal(os2Size);
 				}));
 		});
 
 		describe('given an invalid device slug', () =>
-			it('should be rejected with an error message', function() {
+			it('should be rejected with an error message', function () {
 				const promise = balena.models.os.getDownloadSize('foo-bar-baz');
 				return expect(promise).to.be.rejectedWith('No such device type');
 			}));
 	});
 
-	describe('balena.models.os._getDownloadSize()', function() {
-		it('should cache the results', function() {
+	describe('balena.models.os._getDownloadSize()', function () {
+		it('should cache the results', function () {
 			const p1 = balena.models.os._getDownloadSize('raspberry-pi', '1.26.1');
-			return p1.then(function(result1) {
+			return p1.then(function (result1) {
 				const p2 = balena.models.os._getDownloadSize('raspberry-pi', '1.26.1');
-				return p2.then(function(result2) {
+				return p2.then(function (result2) {
 					expect(result1).to.equal(result2);
 					expect(p1).to.equal(p2);
 				});
@@ -361,7 +353,7 @@ describe('OS model', function() {
 		describeAllAuthUserChanges(itShouldClear_getDownloadSizeCache);
 	});
 
-	describe('balena.models.os._clearDeviceTypesEndpointCaches()', function() {
+	describe('balena.models.os._clearDeviceTypesEndpointCaches()', function () {
 		itShouldClear_getDeviceTypesCache(() =>
 			balena.models.os._clearDeviceTypesEndpointCaches(),
 		);
@@ -375,19 +367,19 @@ describe('OS model', function() {
 		);
 	});
 
-	describe('balena.models.os.getLastModified()', function() {
-		describe('given a valid device slug', function() {
-			it('should eventually be a valid Date instance', function() {
+	describe('balena.models.os.getLastModified()', function () {
+		describe('given a valid device slug', function () {
+			it('should eventually be a valid Date instance', function () {
 				const promise = balena.models.os.getLastModified('raspberry-pi');
 				return expect(promise).to.eventually.be.an.instanceof(Date);
 			});
 
-			it('should eventually be a valid Date instance if passing a device type alias', function() {
+			it('should eventually be a valid Date instance if passing a device type alias', function () {
 				const promise = balena.models.os.getLastModified('raspberrypi');
 				return expect(promise).to.eventually.be.an.instanceof(Date);
 			});
 
-			it('should be able to query for a specific version', function() {
+			it('should be able to query for a specific version', function () {
 				const promise = balena.models.os.getLastModified(
 					'raspberrypi',
 					'1.26.1',
@@ -395,7 +387,7 @@ describe('OS model', function() {
 				return expect(promise).to.eventually.be.an.instanceof(Date);
 			});
 
-			it('should be able to query for a version containing a plus', function() {
+			it('should be able to query for a version containing a plus', function () {
 				const promise = balena.models.os.getLastModified(
 					'raspberrypi',
 					'2.0.6+rev3.prod',
@@ -405,13 +397,13 @@ describe('OS model', function() {
 		});
 
 		describe('given an invalid device slug', () =>
-			it('should be rejected with an error message', function() {
+			it('should be rejected with an error message', function () {
 				const promise = balena.models.os.getLastModified('foo-bar-baz');
 				return expect(promise).to.be.rejectedWith('No such device type');
 			}));
 	});
 
-	describe('balena.models.os.download()', function() {
+	describe('balena.models.os.download()', function () {
 		if (IS_BROWSER) {
 			return;
 		}
@@ -420,43 +412,43 @@ describe('OS model', function() {
 		const tmp = require('tmp');
 		const fs = Bluebird.promisifyAll(require('fs'));
 
-		describe('given a valid device slug', function() {
+		describe('given a valid device slug', function () {
 			it('should contain a valid mime property', () =>
 				balena.models.os
 					.download('raspberry-pi')
-					.then(stream =>
+					.then((stream) =>
 						expect(stream.mime).to.equal('application/octet-stream'),
 					));
 
 			it('should contain a valid mime property if passing a device type alias', () =>
 				balena.models.os
 					.download('raspberrypi')
-					.then(stream =>
+					.then((stream) =>
 						expect(stream.mime).to.equal('application/octet-stream'),
 					));
 
-			it('should be able to download the image', function() {
+			it('should be able to download the image', function () {
 				const tmpFile = tmp.tmpNameSync();
 				return balena.models.os
 					.download('raspberry-pi')
-					.then(stream => stream.pipe(fs.createWriteStream(tmpFile)))
+					.then((stream) => stream.pipe(fs.createWriteStream(tmpFile)))
 					.then(rindle.wait)
 					.then(() => fs.statAsync(tmpFile))
-					.then(stat => expect(stat.size).to.not.equal(0))
+					.then((stat) => expect(stat.size).to.not.equal(0))
 					.finally(() => fs.unlinkAsync(tmpFile));
 			});
 		});
 
 		describe('given an invalid device slug', () =>
-			it('should be rejected with an error message', function() {
+			it('should be rejected with an error message', function () {
 				const promise = balena.models.os.download('foo-bar-baz');
 				return expect(promise).to.be.rejectedWith('No such device type');
 			}));
 	});
 
-	describe('balena.models.os.isSupportedOsUpdate()', function() {
+	describe('balena.models.os.isSupportedOsUpdate()', function () {
 		describe('given an invalid device slug', () =>
-			it('should be rejected with an error message', function() {
+			it('should be rejected with an error message', function () {
 				const promise = balena.models.os.isSupportedOsUpdate(
 					'foo-bar-baz',
 					'2.0.0+rev1.prod',
@@ -465,7 +457,7 @@ describe('OS model', function() {
 				return expect(promise).to.be.rejectedWith('No such device type');
 			}));
 
-		describe('given a valid device slug', function() {
+		describe('given a valid device slug', function () {
 			describe('given a unsupported low starting version number', () =>
 				it('should return false', () =>
 					expect(
@@ -518,9 +510,9 @@ describe('OS model', function() {
 		});
 	});
 
-	describe('balena.models.os.getSupportedOsUpdateVersions()', function() {
+	describe('balena.models.os.getSupportedOsUpdateVersions()', function () {
 		describe('given an invalid device slug', () =>
-			it('should be rejected with an error message', function() {
+			it('should be rejected with an error message', function () {
 				const promise = balena.models.os.getSupportedOsUpdateVersions(
 					'foo-bar-baz',
 					'2.9.6+rev1.prod',
@@ -532,12 +524,12 @@ describe('OS model', function() {
 			it('should return the list of supported hup targets', () =>
 				balena.models.os
 					.getSupportedOsUpdateVersions('raspberrypi3', '2.9.6+rev1.prod')
-					.then(function({ current, recommended, versions }) {
+					.then(function ({ current, recommended, versions }) {
 						expect(current).to.equal('2.9.6+rev1.prod');
 						expect(recommended).to.be.a('string');
 						expect(versions).to.be.an('array');
 						expect(versions).to.not.have.length(0);
-						_.each(versions, function(v) {
+						_.each(versions, function (v) {
 							expect(v).to.be.a('string');
 							expect(bSemver.gte(v, current)).to.be.true;
 						});
@@ -548,15 +540,15 @@ describe('OS model', function() {
 					})));
 	});
 
-	describe('when logged in as a user with a single application', function() {
+	describe('when logged in as a user with a single application', function () {
 		givenLoggedInUser(beforeEach);
 
 		givenAnApplication(beforeEach);
 
-		describe('balena.models.os.getConfig()', function() {
+		describe('balena.models.os.getConfig()', function () {
 			const DEFAULT_OS_VERSION = '2.12.7+rev1.prod';
 
-			it('should fail if no version option is provided', function() {
+			it('should fail if no version option is provided', function () {
 				return expect(
 					(balena.models.os.getConfig as any)(this.application.id),
 				).to.be.rejectedWith(
@@ -564,8 +556,8 @@ describe('OS model', function() {
 				);
 			});
 
-			['id', 'app_name', 'slug'].forEach(prop => {
-				it(`should be able to get an application config by ${prop}`, function() {
+			['id', 'app_name', 'slug'].forEach((prop) => {
+				it(`should be able to get an application config by ${prop}`, function () {
 					const promise = balena.models.os.getConfig(this.application[prop], {
 						version: DEFAULT_OS_VERSION,
 					});
@@ -585,7 +577,7 @@ describe('OS model', function() {
 				});
 			});
 
-			it('should be rejected if the version is invalid', function() {
+			it('should be rejected if the version is invalid', function () {
 				const promise = balena.models.os.getConfig(this.application.id, {
 					version: 'v1+foo',
 				});
@@ -594,7 +586,7 @@ describe('OS model', function() {
 				);
 			});
 
-			it('should be rejected if the version is <= 1.2.0', function() {
+			it('should be rejected if the version is <= 1.2.0', function () {
 				const promise = balena.models.os.getConfig(this.application.id, {
 					version: '1.2.0',
 				});
@@ -603,7 +595,7 @@ describe('OS model', function() {
 				);
 			});
 
-			it('should be able to configure v1 image parameters', function() {
+			it('should be able to configure v1 image parameters', function () {
 				const configOptions = {
 					appUpdatePollInterval: 72,
 					network: 'wifi' as const,
@@ -616,7 +608,7 @@ describe('OS model', function() {
 				};
 				return balena.models.os
 					.getConfig(this.application.id, configOptions)
-					.then(function(config) {
+					.then(function (config) {
 						expect(config).to.deep.match({
 							// NOTE: the interval is converted to ms in the config object
 							appUpdatePollInterval:
@@ -633,7 +625,7 @@ describe('OS model', function() {
 					});
 			});
 
-			it('should be able to configure v2 image parameters', function() {
+			it('should be able to configure v2 image parameters', function () {
 				const configOptions = {
 					appUpdatePollInterval: 72,
 					network: 'wifi' as const,
@@ -646,7 +638,7 @@ describe('OS model', function() {
 				};
 				return balena.models.os
 					.getConfig(this.application.id, configOptions)
-					.then(function(config) {
+					.then(function (config) {
 						expect(config).to.deep.match({
 							// NOTE: the interval is converted to ms in the config object
 							appUpdatePollInterval:
@@ -658,7 +650,7 @@ describe('OS model', function() {
 					});
 			});
 
-			it('should be rejected if the application id does not exist', function() {
+			it('should be rejected if the application id does not exist', function () {
 				const promise = balena.models.os.getConfig(999999, {
 					version: DEFAULT_OS_VERSION,
 				});
@@ -667,7 +659,7 @@ describe('OS model', function() {
 				);
 			});
 
-			it('should be rejected if the application name does not exist', function() {
+			it('should be rejected if the application name does not exist', function () {
 				const promise = balena.models.os.getConfig('foobarbaz', {
 					version: DEFAULT_OS_VERSION,
 				});
@@ -679,7 +671,7 @@ describe('OS model', function() {
 	});
 
 	describe('helpers', () =>
-		describe('balena.models.os.isArchitectureCompatibleWith()', function() {
+		describe('balena.models.os.isArchitectureCompatibleWith()', function () {
 			[
 				['armv7hf', 'i386'],
 				['aarch64', 'i386'],
@@ -701,12 +693,12 @@ describe('OS model', function() {
 				['armv7hf', 'armv5e'],
 				['armv7hf', 'aarch64'],
 				['aarch64', 'armv5e'],
-			].forEach(function(...args) {
+			].forEach(function (...args) {
 				const [deviceArch, appArch] = Array.from(args[0]);
 				it(`should return false when comparing ${deviceArch} and ${appArch} architectures`, () => expect(balena.models.os.isArchitectureCompatibleWith(deviceArch, appArch)).to.equal(false));
 			});
 
-			it('should return true when comparing the same architecture slugs', function() {
+			it('should return true when comparing the same architecture slugs', function () {
 				expect(
 					balena.models.os.isArchitectureCompatibleWith('rpi', 'rpi'),
 				).to.equal(true);
@@ -734,7 +726,7 @@ describe('OS model', function() {
 				['aarch64', 'armv7hf'],
 				['aarch64', 'rpi'],
 				['armv7hf', 'rpi'],
-			].forEach(function(...args) {
+			].forEach(function (...args) {
 				const [deviceArch, appArch] = Array.from(args[0]);
 				it(`should return true when comparing ${deviceArch} and ${appArch} architectures`, () => expect(balena.models.os.isArchitectureCompatibleWith(deviceArch, appArch)).to.equal(true));
 			});

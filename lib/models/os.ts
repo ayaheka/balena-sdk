@@ -51,7 +51,7 @@ const BALENAOS_VERSION_REGEX = /v?\d+\.\d+\.\d+(\.rev\d+)?((\-|\+).+)?/;
 
 const DEVICE_TYPES_ENDPOINT_CACHING_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
-const getOsModel = function(
+const getOsModel = function (
 	deps: InjectedDependenciesParam,
 	opts: InjectedOptionsParam,
 ) {
@@ -89,7 +89,7 @@ const getOsModel = function(
 	>(() => configModel().getDeviceTypes());
 
 	const getValidatedDeviceType = (deviceTypeSlug: string) =>
-		_getDeviceTypes().then(types =>
+		_getDeviceTypes().then((types) =>
 			deviceTypesUtil.getBySlug(types, deviceTypeSlug),
 		);
 
@@ -135,7 +135,7 @@ const getOsModel = function(
 				versions.sort(bSemver.rcompare);
 				const potentialRecommendedVersions = reject(
 					versions,
-					version =>
+					(version) =>
 						semver.prerelease(version) || isDevelopmentVersion(version),
 				);
 				const recommended =
@@ -207,7 +207,7 @@ const getOsModel = function(
 	 * @function
 	 * @memberof balena.models.os
 	 */
-	const _getMaxSatisfyingVersion = function(
+	const _getMaxSatisfyingVersion = function (
 		versionOrRange: string,
 		osVersions: OsVersions,
 	) {
@@ -257,7 +257,7 @@ const getOsModel = function(
 	 * 	console.log('The OS download size for raspberry-pi', size);
 	 * });
 	 */
-	const getDownloadSize = function(
+	const getDownloadSize = function (
 		deviceType: string,
 		version: string = 'latest',
 		callback?: (error?: Error, result?: number) => void,
@@ -296,7 +296,7 @@ const getOsModel = function(
 	 * 	console.log('Supported OS versions for raspberry-pi', osVersions);
 	 * });
 	 */
-	const getSupportedVersions = function(
+	const getSupportedVersions = function (
 		deviceType: string,
 		callback?: (error?: Error, result?: OsVersions) => void,
 	): Promise<OsVersions> {
@@ -342,7 +342,7 @@ const getOsModel = function(
 	 * 	console.log('Supported OS versions for raspberry-pi', osVersions);
 	 * });
 	 */
-	const getMaxSatisfyingVersion = function(
+	const getMaxSatisfyingVersion = function (
 		deviceType: string,
 		versionOrRange: keyof OsVersions = 'latest',
 		callback?: (error?: Error, result?: string) => void,
@@ -351,7 +351,9 @@ const getOsModel = function(
 
 		return getValidatedDeviceType(deviceType)
 			.then(() => getSupportedVersions(deviceType))
-			.then(osVersions => _getMaxSatisfyingVersion(versionOrRange, osVersions))
+			.then((osVersions) =>
+				_getMaxSatisfyingVersion(versionOrRange, osVersions),
+			)
 			.asCallback(callback);
 	};
 
@@ -384,7 +386,7 @@ const getOsModel = function(
 	 * 	console.log('The raspberry-pi image was last modified in ' + date);
 	 * });
 	 */
-	const getLastModified = function(
+	const getLastModified = function (
 		deviceType: string,
 		version: string = 'latest',
 		callback?: (error?: Error, result?: Date) => void,
@@ -393,7 +395,7 @@ const getOsModel = function(
 
 		return getValidatedDeviceType(deviceType)
 			.then(() => normalizeVersion(version))
-			.then(ver =>
+			.then((ver) =>
 				request.send({
 					method: 'HEAD',
 					url: deviceImageUrl(deviceType, ver),
@@ -404,7 +406,7 @@ const getOsModel = function(
 			.catch(isNotFoundResponse, () => {
 				throw new Error('No such version for the device type');
 			})
-			.then(response => new Date(response.headers.get('last-modified')!))
+			.then((response) => new Date(response.headers.get('last-modified')!))
 			.asCallback(callback);
 	};
 
@@ -433,7 +435,7 @@ const getOsModel = function(
 	 * 	stream.pipe(fs.createWriteStream('foo/bar/image.img'));
 	 * });
 	 */
-	const download = onlyIf(!isBrowser)(function(
+	const download = onlyIf(!isBrowser)(function (
 		deviceType: string,
 		version: string = 'latest',
 		callback?: (error?: Error, result?: BalenaRequestStreamResult) => void,
@@ -448,7 +450,7 @@ const getOsModel = function(
 
 				return normalizeVersion(version);
 			})
-			.then(ver =>
+			.then((ver) =>
 				request.stream({
 					method: 'GET',
 					url: deviceImageUrl(deviceType, ver),
@@ -456,7 +458,7 @@ const getOsModel = function(
 					// optionally authenticated, so we send the token in all cases
 				}),
 			)
-			.catch(isNotFoundResponse, function() {
+			.catch(isNotFoundResponse, function () {
 				throw new Error('No such version for the device type');
 			})
 			.asCallback(callback);
@@ -507,7 +509,7 @@ const getOsModel = function(
 	 * 	fs.writeFile('foo/bar/config.json', JSON.stringify(config));
 	 * });
 	 */
-	const getConfig = function(
+	const getConfig = function (
 		nameOrSlugOrId: string | number,
 		options: ImgConfigOptions,
 		callback?: (error?: Error, result?: object) => void,
@@ -615,10 +617,10 @@ const getOsModel = function(
 				// to benefit from the baked-in normalization
 				const current = find(
 					allVersions,
-					v => bSemver.compare(v, currentVersion) === 0,
+					(v) => bSemver.compare(v, currentVersion) === 0,
 				);
 
-				const versions = allVersions.filter(v =>
+				const versions = allVersions.filter((v) =>
 					// avoid the extra call to getValidatedDeviceType, since getSupportedVersions already does that
 					hupActionHelper.isSupportedOsUpdate(deviceType, currentVersion, v),
 				);

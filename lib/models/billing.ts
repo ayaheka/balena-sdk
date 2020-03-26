@@ -25,7 +25,7 @@ import {
 } from '../../typings/balena-sdk';
 import { InjectedDependenciesParam, InjectedOptionsParam } from '../balena';
 
-const getBillingModel = function(
+const getBillingModel = function (
 	deps: InjectedDependenciesParam,
 	opts: InjectedOptionsParam,
 ) {
@@ -224,7 +224,7 @@ const getBillingModel = function(
 	 * 	stream.pipe(fs.createWriteStream('foo/bar/invoice-0000.pdf'));
 	 * });
 	 */
-	exports.downloadInvoice = function(
+	exports.downloadInvoice = function (
 		invoiceNumber: string,
 		callback?: (
 			error?: Error,

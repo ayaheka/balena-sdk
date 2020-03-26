@@ -23,7 +23,7 @@ import * as BalenaSdk from '../../typings/balena-sdk';
 import { InjectedDependenciesParam, InjectedOptionsParam } from '../balena';
 import { findCallback, isId, mergePineOptions } from '../util';
 
-const getReleaseModel = function(
+const getReleaseModel = function (
 	deps: InjectedDependenciesParam,
 	opts: InjectedOptionsParam,
 ) {
@@ -95,7 +95,7 @@ const getReleaseModel = function(
 						id: commitOrId,
 						options: mergePineOptions({}, options),
 					})
-					.tap(release => {
+					.tap((release) => {
 						if (release == null) {
 							throw new errors.BalenaReleaseNotFound(commitOrId);
 						}
@@ -113,7 +113,7 @@ const getReleaseModel = function(
 							options,
 						),
 					})
-					.tap(function(releases) {
+					.tap(function (releases) {
 						if (isEmpty(releases)) {
 							throw new errors.BalenaReleaseNotFound(commitOrId);
 						}
@@ -210,7 +210,7 @@ const getReleaseModel = function(
 				options.release,
 			),
 		)
-			.then(function(rawRelease) {
+			.then(function (rawRelease) {
 				const release = omit(rawRelease, [
 					'contains__image',
 					'is_created_by__user',
@@ -219,10 +219,10 @@ const getReleaseModel = function(
 				// Squash .contains__image[x].image[0] into a simple array
 				const images = (rawRelease.contains__image as Array<{
 					image: BalenaSdk.Image[];
-				}>).map(imageJoin => imageJoin.image[0]);
+				}>).map((imageJoin) => imageJoin.image[0]);
 
 				release.images = images
-					.map(function({ is_a_build_of__service, ...imageData }) {
+					.map(function ({ is_a_build_of__service, ...imageData }) {
 						const image: BalenaSdk.ReleaseWithImageDetails['images'][number] = {
 							...imageData,
 							service_name: (is_a_build_of__service as BalenaSdk.Service[])[0]
@@ -509,7 +509,7 @@ const getReleaseModel = function(
 					release_tag: mergePineOptions({ $orderby: 'tag_key asc' }, options),
 				},
 			})
-				.then(release => release.release_tag as BalenaSdk.ReleaseTag[])
+				.then((release) => release.release_tag as BalenaSdk.ReleaseTag[])
 				.asCallback(callback);
 		},
 

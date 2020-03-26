@@ -92,7 +92,7 @@ const getServiceModel = (
 	 * 	console.log(services);
 	 * });
 	 */
-	exports.getAllByApplication = function(
+	exports.getAllByApplication = function (
 		nameOrSlugOrId: string | number,
 		options: PineOptionsFor<Service> = {},
 		callback?: (error?: Error, result?: Service[]) => void,
